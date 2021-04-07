@@ -25,7 +25,9 @@ entity top_dsp is
     port (
         clk       : in std_logic;
         serial_rx : in std_logic;
-        serial_tx : out std_logic
+        serial_tx : out std_logic;
+        charged_a : out std_logic;
+        done      : out std_logic
     );
 end top_dsp;
 
@@ -157,15 +159,18 @@ architecture rtl of top_dsp is
     --Functioning related
     type state is (
         start,
-        receive,
+        receive_a,
+        receive_b,
         mult,
         send,
         delay
     );
 
-    signal r_state    : state   := start;
-    signal byte_count : integer := 0;
-    signal clk_count  : integer := 0;
+    signal r_state     : state     := start;
+    signal byte_count  : integer   := 0;
+    signal clk_count   : integer   := 0;
+    signal s_done      : std_logic := '1';
+    signal s_charged_a : std_logic := '0';
 
 begin
 
@@ -228,6 +233,10 @@ begin
         o_RX_Byte   => o_RX_Byte
     );
 
+    --Asignments
+    done      <= s_done;
+    charged_a <= s_charged_a;
+
     --Processes
 
     dv_reg : process (clk, rst_dv_reg)
@@ -269,39 +278,53 @@ begin
                     p_rst      <= '1';
                     rst_dv_reg <= '1';
                     clk_count  <= 0;
-                    r_state    <= receive;
+                    r_state    <= receive_a;
                 end if;
 
-            when receive =>
+            when receive_a =>
 
+                rst_dv_reg <= '1'; -- Don't reset DV register 
                 if (q_dv_reg = '1') then -- If values available, then
+                    s_done     <= '0'; -- Turn down done signal
                     rst_dv_reg <= '0'; -- Reset register
-                    if (byte_count < 3) then -- If byte_count < 3, we are dealing with a
-                        if (byte_count = 0) then -- If first byte, then we only have one bit
-                            a(multiplication_word_length - 1) <= o_RX_Byte(0);
-                        else -- Else a full byte
-                            treating_position := multiplication_word_length - 2 - (byte_count - 1) * 8;
-                            a(treating_position downto treating_position - 7) <= o_RX_Byte;
-                        end if;
-                    else -- Else with b
-                        if (byte_count = 3) then -- If first byte, then we only have one bit
-                            b(multiplication_word_length - 1) <= o_RX_Byte(0);
-                        else -- Else a full byte
-                            treating_position := multiplication_word_length - 2 - (byte_count - 4) * 8;
-                            b(treating_position downto treating_position - 7) <= o_RX_Byte;
-                        end if;
+                    if (byte_count = 0) then -- If first byte, then we only have one bit
+                        a(multiplication_word_length - 1) <= o_RX_Byte(0);
+                    else -- Else a full byte
+                        treating_position := multiplication_word_length - 2 - (byte_count - 1) * 8;
+                        a(treating_position downto treating_position - 7) <= o_RX_Byte;
                     end if;
                     byte_count <= byte_count + 1; --Increment byte count
-                else --Else, be ready to receive
-                    rst_dv_reg <= '1'; -- Don't reset DV register                
                 end if;
 
                 --State change condition
-                if (byte_count = 6) then
+                if (byte_count = 3) then
+                    byte_count  <= 0;
+                    s_charged_a <= '1';
+                    r_state     <= receive_b;
+                else
+                    r_state <= receive_a;
+                end if;
+
+            when receive_b =>
+
+                rst_dv_reg <= '1'; -- Don't reset DV register    
+                if (q_dv_reg = '1') then -- If values available, then
+                    rst_dv_reg <= '0'; -- Reset register
+                    if (byte_count = 0) then -- If first byte, then we only have one bit
+                        b(multiplication_word_length - 1) <= o_RX_Byte(0);
+                    else -- Else a full byte
+                        treating_position := multiplication_word_length - 2 - (byte_count - 1) * 8;
+                        b(treating_position downto treating_position - 7) <= o_RX_Byte;
+                    end if;
+                    byte_count <= byte_count + 1; --Increment byte count                    
+                end if;
+
+                --State change condition
+                if (byte_count = 3) then
                     byte_count <= 0;
                     r_state    <= mult;
                 else
-                    r_state <= receive;
+                    r_state <= receive_b;
                 end if;
 
             when mult =>
@@ -332,16 +355,18 @@ begin
                             treating_position := accumulation_word_length - 5 - (byte_count - 1) * 8;
                             i_TX_Byte <= product(treating_position downto treating_position - 7);
                         end if;
-                        i_TX_DV             <= '1';
-                        byte_count          <= byte_count + 1;
-                        r_state             <= delay; --Do a 3 clk cycle delay
+                        i_TX_DV    <= '1';
+                        byte_count <= byte_count + 1;
+                        r_state    <= delay; --Do a 3 clk cycle delay
                     else -- Else don't start transmission
                         r_state <= send;
                         i_TX_DV <= '0';
                     end if;
                 else -- Sending is over 
-                    byte_count <= 0;
-                    r_state    <= receive;
+                    byte_count  <= 0;
+                    s_done      <= '1';
+                    s_charged_a <= '0';
+                    r_state     <= receive_a;
                 end if;
 
             when delay =>
