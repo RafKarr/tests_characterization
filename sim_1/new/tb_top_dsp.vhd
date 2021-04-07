@@ -30,8 +30,9 @@ architecture bench of top_dsp_tb is
     -- Clock period
     constant clk_period   : time                          := 10 ns;
     constant c_BIT_PERIOD : time                          := 8680 ns;
-    constant a            : std_logic_vector(16 downto 0) := std_logic_vector(to_unsigned(4173, 17));
-    constant b            : std_logic_vector(16 downto 0) := std_logic_vector(to_unsigned(36297, 17));
+    constant a            : std_logic_vector(16 downto 0) := "1" & x"182C";
+    constant b            : std_logic_vector(16 downto 0) := "0" & x"46F9";
+
     -- Generics
 
     -- Ports
@@ -96,7 +97,7 @@ begin
     tb_proc : process
         variable treating_position : integer;
     begin
-
+        wait for clk_period * 10000;
         for i in 0 to 5 loop --Send operands
             if (i < 3) then
                 if (i = 0) then
