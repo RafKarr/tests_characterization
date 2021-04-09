@@ -40,10 +40,12 @@ architecture RTL of UART_TX is
   signal r_Bit_Index : integer range 0 to 7 := 0;  -- 8 Bits Total
   signal r_TX_Data   : std_logic_vector(7 downto 0) := (others => '0');
   signal r_TX_Done   : std_logic := '0';
-   
+  signal s_TX_Serial : std_logic := '1';
+  
 begin
  
-   
+  o_TX_Serial <= s_TX_Serial; 
+
   p_UART_TX : process (i_Clk)
   begin
     if rising_edge(i_Clk) then
@@ -52,7 +54,7 @@ begin
  
         when s_Idle =>
           o_TX_Active <= '0';
-          o_TX_Serial <= '1';         -- Drive Line High for Idle
+          s_TX_Serial <= '1';         -- Drive Line High for Idle
           r_TX_Done   <= '0';
           r_Clk_Count <= 0;
           r_Bit_Index <= 0;
@@ -68,7 +70,7 @@ begin
         -- Send out Start Bit. Start bit = 0
         when s_TX_Start_Bit =>
           o_TX_Active <= '1';
-          o_TX_Serial <= '0';
+          s_TX_Serial <= '0';
  
           -- Wait g_CLKS_PER_BIT-1 clock cycles for start bit to finish
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
@@ -82,7 +84,7 @@ begin
            
         -- Wait g_CLKS_PER_BIT-1 clock cycles for data bits to finish          
         when s_TX_Data_Bits =>
-          o_TX_Serial <= r_TX_Data(r_Bit_Index);
+          s_TX_Serial <= r_TX_Data(r_Bit_Index);
            
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
             r_Clk_Count <= r_Clk_Count + 1;
@@ -103,7 +105,7 @@ begin
  
         -- Send out Stop bit.  Stop bit = 1
         when s_TX_Stop_Bit =>
-          o_TX_Serial <= '1';
+          s_TX_Serial <= '1';
  
           -- Wait g_CLKS_PER_BIT-1 clock cycles for Stop bit to finish
           if r_Clk_Count < g_CLKS_PER_BIT-1 then
