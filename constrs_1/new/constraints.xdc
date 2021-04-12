@@ -10,6 +10,6 @@ set_property PACKAGE_PIN A18 [get_ports serial_tx]
 	set_property IOSTANDARD LVCMOS33 [get_ports serial_tx]
 
 
-#Pin indicators
-set_property PACKAGE_PIN U16 [get_ports trigger]						
+#Trigger
+set_property PACKAGE_PIN J1 [get_ports trigger]						
 	set_property IOSTANDARD LVCMOS33 [get_ports trigger]
