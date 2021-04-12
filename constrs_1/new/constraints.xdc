@@ -11,5 +11,5 @@ set_property PACKAGE_PIN A18 [get_ports serial_tx]
 
 
 #Pin indicators
-set_property PACKAGE_PIN U16 [get_ports done]						
-	set_property IOSTANDARD LVCMOS33 [get_ports done]
+set_property PACKAGE_PIN U16 [get_ports trigger]						
+	set_property IOSTANDARD LVCMOS33 [get_ports trigger]

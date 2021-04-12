@@ -26,7 +26,7 @@ entity top_dsp is
         clk       : in std_logic;
         serial_rx : in std_logic;
         serial_tx : out std_logic;
-        done      : out std_logic
+        trigger   : out std_logic
     );
 end top_dsp;
 
@@ -153,7 +153,7 @@ architecture rtl of top_dsp is
     signal s_byte_count_en    : std_logic            := '1';
     signal r_clk_count        : integer range 0 to 2 := 0;
     signal s_clk_count_en     : std_logic            := '0';
-    signal s_done             : std_logic            := '1';
+    signal s_trigger          : std_logic            := '0';
 
 begin
 
@@ -228,7 +228,7 @@ begin
     );
     --Assignments
 
-    done   <= s_done;
+    trigger <= s_trigger;
 
     --Processes
 
@@ -290,7 +290,7 @@ begin
                 s_byte_count_reset <= '1';
                 s_byte_count_en    <= '0';
                 s_clk_count_en     <= '0';
-                s_done             <= '1';
+                s_trigger          <= '0';
                 s_next_state       <= idle;
 
             when idle =>
@@ -309,7 +309,7 @@ begin
                     s_b_en         <= '1';
                     s_p_en         <= '1';
                     s_clk_count_en <= '0';
-                    s_done         <= '0';
+                    s_trigger      <= '1';
                     s_next_state   <= mult;
                 else
                     s_ack          <= '0';
@@ -317,7 +317,7 @@ begin
                     s_b_en         <= '0';
                     s_p_en         <= '0';
                     s_clk_count_en <= '1';
-                    s_done         <= '1';
+                    s_trigger      <= '0';
                     s_next_state   <= idle;
                 end if;
 
@@ -332,7 +332,7 @@ begin
                 s_TX_DV            <= '0';
                 s_byte_count_reset <= '0';
                 s_byte_count_en    <= '0';
-                s_done             <= '0';
+                s_trigger          <= '1';
 
                 if (r_clk_count = 2) then
                     s_p_en           <= '0';
@@ -348,14 +348,14 @@ begin
 
             when send =>
 
-                s_ack   <= '0';
-                s_a_en  <= '0';
-                s_a_rst <= '1';
-                s_b_en  <= '0';
-                s_b_rst <= '1';
-                s_p_en  <= '0';
-                s_p_rst <= '1';
-                s_done  <= '0';
+                s_ack     <= '0';
+                s_a_en    <= '0';
+                s_a_rst   <= '1';
+                s_b_en    <= '0';
+                s_b_rst   <= '1';
+                s_p_en    <= '0';
+                s_p_rst   <= '1';
+                s_trigger <= '0';
 
                 if (r_byte_count < 6) then
 

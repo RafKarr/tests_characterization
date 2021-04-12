@@ -12,7 +12,7 @@ architecture bench of top_dsp_tb is
             clk       : in std_logic;
             serial_rx : in std_logic;
             serial_tx : out std_logic;
-            done      : out std_logic
+            trigger   : out std_logic
         );
     end component;
 
@@ -32,7 +32,7 @@ architecture bench of top_dsp_tb is
     signal byte_received   : std_logic_vector(7 downto 0);
     signal result          : std_logic_vector(47 downto 0);
     signal simulation_done : boolean := false;
-    signal s_done          : std_logic;
+    signal s_trigger       : std_logic;
 
     procedure UART_WRITE_BYTE (
         i_data_in       : in std_logic_vector(7 downto 0);
@@ -80,7 +80,7 @@ begin
         clk       => clk,
         serial_rx => serial_rx,
         serial_tx => serial_tx,
-        done => s_done
+        trigger   => s_trigger
     );
 
     clk_process : process
@@ -90,6 +90,8 @@ begin
             wait for clk_period/2;
             clk <= '0';
             wait for clk_period/2;
+        else 
+            wait;
         end if;
     end process clk_process;
 
