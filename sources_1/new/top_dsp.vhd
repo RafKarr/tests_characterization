@@ -25,6 +25,7 @@ entity top_dsp is
     port (
         clk       : in std_logic;
         serial_rx : in std_logic;
+        reset     : in std_logic;
         serial_tx : out std_logic;
         trigger   : out std_logic
     );
@@ -395,7 +396,11 @@ begin
     sequential : process (clk)
     begin
         if rising_edge(clk) then
-            r_state <= s_next_state;
+            if (reset = '1') then
+                r_state <= cleanup;
+            else
+                r_state <= s_next_state;
+            end if;
         end if;
     end process;
 
