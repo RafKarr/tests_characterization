@@ -1,7 +1,10 @@
 % dbstop if error
 rng shuffle
-cleanupObj = onCleanup(@cleanMeUp);
-clear
+% cleanupObj = onCleanup(@cleanMeUp);
+
+if (exist('name','var')==0)
+    name = './traces/input.mat';
+end
 
 format long;
 if ~isempty(instrfind)
@@ -46,12 +49,17 @@ for n =1: no_Test
 %         traces_Y = [traces_Y zeros(size(traces_Y,1),length(Y)-size(traces_Y,2))];
 %     end
     traces_Y(n,:) = Y;
-    result = dec2hex(fread(myComPort,6,'uint8'));
+    result = dec2hex(fread(myComPort,6,'uint8'),2);
     result = reshape(result',1,numel(result));
+
     if (result == expMult)
         disp('OK!');
         Test= Test + 1;
+    else
+        disp('Not OK');
     end
+
+    
 end
 
 WrongTest =no_Test-Test;
@@ -61,5 +69,5 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save('./traces/input.mat', 'inputs_a', 'inputs_b','traces_Y');
+save(name, 'inputs_a', 'inputs_b','traces_Y');
 % save('./traces/input.mat', 'inputs_a', 'inputs_b');
