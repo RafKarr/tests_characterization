@@ -21,20 +21,23 @@ sets1 = 10;
 sets2 = 100;
 
 no_Test = (sets1 + sets2)*setSize;
-inputs_a = char(zeros(no_Test,6));
-inputs_b = char(zeros(no_Test,6));
-b = randi([0 131071]);
-b = dec2hex(b,6);
 
+load('./traces_v4/input_sets_second_op.mat','inputs_a','inputs_b');
+% inputs_a = char(zeros(no_Test,6));
+% inputs_b = char(zeros(no_Test,6));
+% b = randi([0 131071]);
+% b = dec2hex(b,6);
+b = inputs_b(1,:);
 
 
 %500 multiplications with the same second operand
 for n =1: sets1 * setSize
-    a = randi([0 131071]);
+%     a = randi([0 131071]);
+    a = hex2dec(inputs_a(n,:));
     expMult = dec2hex((hex2dec(b)*a),12);
-    a = dec2hex(a,6);
-    inputs_a(n,:) = a;
-    inputs_b(n,:) = b;
+     a = dec2hex(a,6);
+%     inputs_a(n,:) = a;
+%     inputs_b(n,:) = b;
     % Send A
     for k = 1:3
         sendbyte = a((2*k-1):(2*k));
@@ -67,14 +70,16 @@ disp('Done same second operand');
 
 %100 sets of 50 multiplications with the same second operand each set
 for l =1: sets2
-    b = randi([0 131071]);
-    b = dec2hex(b,6);
+%     b = randi([0 131071]);
+%     b = dec2hex(b,6);
+    b = inputs_b(sets1*setSize+(l-1)*setSize+1,:);
     for n = 1 : setSize
-        a = randi([0 131071]);
+%         a = randi([0 131071]);
+        a = hex2dec(inputs_a(sets1*setSize+(l-1)*setSize+n,:));
         expMult = dec2hex((hex2dec(b)*a),12);
-        a = dec2hex(a,6);
-        inputs_a(sets1*setSize+(l-1)*setSize+n,:) = a;
-        inputs_b(sets1*setSize+(l-1)*setSize+n,:) = b;
+         a= dec2hex(a,6);
+%         inputs_a(sets1*setSize+(l-1)*setSize+n,:) = a;
+%         inputs_b(sets1*setSize+(l-1)*setSize+n,:) = b;
         % Send A
         for k = 1:3
             sendbyte = a((2*k-1):(2*k));
@@ -109,4 +114,5 @@ fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong case
 % meanTrig = mean(traces_trig,1);
 % traces_Y = traces_Y(:,meanTrig >=1.5);
 
-save('./traces_v5/input_sets_second_op.mat', 'inputs_a', 'inputs_b','traces_Y','traces_filt');
+% save('./traces_v4/input_sets_second_op.mat', 'inputs_a', 'inputs_b','traces_Y','traces_filt');
+save('./traces_v5/input_sets_second_op.mat','inputs_a','inputs_b','traces_Y','traces_filt');

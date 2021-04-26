@@ -3,9 +3,9 @@ rng shuffle
 % cleanupObj = onCleanup(@cleanMeUp);
 
 if (exist('name','var')==0)
-    name = './traces/input.mat';
+    name = './traces_v5/input.mat';
 end
-
+clear traces_Y traces_filt
 format long;
 if ~isempty(instrfind)
      fclose(instrfind);
@@ -70,5 +70,5 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save(name, 'inputs_a', 'inputs_b','traces_Y');
+save(name, 'inputs_a', 'inputs_b','traces_Y','traces_filt');
 % save('./traces/input.mat', 'inputs_a', 'inputs_b');
