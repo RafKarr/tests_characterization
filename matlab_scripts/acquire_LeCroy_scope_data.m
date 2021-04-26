@@ -50,7 +50,8 @@
 % groupObj = get(deviceObj, 'Waveform');
 % groupObj = groupObj(1);
 [Y, T, XUNIT, YUNIT, HEADER] = invoke(groupObj, 'readwaveform', 'channel2');
-
+[TRIG, T2, XUNIT2, YUNIT2, HEADER2] = invoke(groupObj2, 'readwaveform', 'channel3');
+[FILT_Y, T3, XUNIT3, YUNIT3, HEADER3] = invoke(groupObj2, 'readwaveform', 'traceB');
 %%%%groupObj2 = get(deviceObj, 'Waveform');
 %%%%groupObj2 = groupObj2(1);
 %[Y2, T2, XUNIT2, YUNIT2, HEADER2] = invoke(groupObj2, 'readwaveform', 'channel2');

@@ -34,6 +34,7 @@ entity receive_buffer is
         i_byte      : in std_logic_vector (7 downto 0);
         i_rx_DV     : in std_logic;
         i_ack       : in std_logic;
+        i_reset     : in std_logic;
         clk         : in std_logic;
         o_a         : out std_logic_vector (16 downto 0);
         o_b         : out std_logic_vector (16 downto 0);
@@ -124,7 +125,11 @@ begin
     sequential : process (clk)
     begin
         if rising_edge(clk) then
-            r_state_current <= s_state_next;
+            if (i_reset = '1') then 
+                r_state_current <= ready;
+            else
+                r_state_current <= s_state_next;
+            end if;
         end if;
     end process;
 
