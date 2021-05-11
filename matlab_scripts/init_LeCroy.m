@@ -19,9 +19,9 @@ connect(deviceObj);
 groupObj = get(deviceObj, 'Waveform');
 groupObj = groupObj(1);
 
-groupObj2 = get(deviceObj, 'Waveform');
-groupObj2 = groupObj2(1);
-
-groupObj3 = get(deviceObj, 'Waveform');
-groupObj3 = groupObj3(1);
+% groupObj2 = get(deviceObj, 'Waveform');
+% groupObj2 = groupObj2(1);
+% 
+% groupObj3 = get(deviceObj, 'Waveform');
+% groupObj3 = groupObj3(1);
 

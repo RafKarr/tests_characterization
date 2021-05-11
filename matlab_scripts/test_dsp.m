@@ -3,7 +3,7 @@ rng shuffle
 % cleanupObj = onCleanup(@cleanMeUp);
 
 if (exist('name','var')==0)
-    name = './traces_v5/input.mat';
+    name = './traces_v4/input.mat';
 end
 clear traces_Y traces_filt
 format long;
