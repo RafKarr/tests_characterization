@@ -15,6 +15,6 @@ for i = 1 : size(traces,1) - 1
     end
 end
 
-threshold = mean(corrDiff) + (mean(corrEq) - mean(corrDiff))/2;
+threshold = (mean(corrEq) + mean(corrDiff))/2;
 end
 
