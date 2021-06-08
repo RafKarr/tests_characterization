@@ -18,15 +18,15 @@ Test = 0;
 
 setSize = 31;
 
-multssets = 1000;
+multssets = 80;
 
-no_Test = multssets * setsize^2;
+no_Test = multssets * setSize^2;
 
 inputs_a = char(zeros(no_Test,6));
 inputs_b = char(zeros(no_Test,6));
 
 %1000 multiplications with 250 pairs of them with the same second operand
-for i = 1 : 500
+for i = 1 : multssets/2
     %Generate random b
     b = generateRandom521bit();
     %Multiply with two different a
@@ -36,10 +36,10 @@ for i = 1 : 500
         for k = 1:setSize
             subB = b(k,:);
             for l=1:setSize
-                index = 2*setsize^2*(i-1)+setsize^2*(j-1)+31*(k-1)+l;
+                index = 2*setSize^2*(i-1)+setSize^2*(j-1)+31*(k-1)+l;
                 subA = a(l,:);
-                inputs_a(index,:) = a;
-                inputs_b(index,:) = b;
+                inputs_a(index,:) = subA;
+                inputs_b(index,:) = subB;
                 expMult = dec2hex(hex2dec(subA)*hex2dec(subB),12);
                 % Send A
                 for m = 1:3
@@ -63,7 +63,7 @@ for i = 1 : 500
                 if (result == expMult)
                     disp('OK!');
                     Test= Test + 1;
-                else
+                else`
                     e = MException('Error');
                     throw(e);
                 end
@@ -80,4 +80,4 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save('./traces_v6t/input_sets_second_op_31.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+save('./traces_v6/input_sets_second_op1.mat','inputs_a','inputs_b','traces_Y','-v7.3');

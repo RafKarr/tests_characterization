@@ -3,7 +3,7 @@ rng shuffle
 % cleanupObj = onCleanup(@cleanMeUp);
 
 % if (exist('name','var')==0)
-    name = './traces_v4/threshold.mat';
+    name = './traces_v5/threshold.mat';
 % end
 clear traces_Y traces_filt
 format long;
@@ -70,4 +70,4 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save('./traces_v4/threshold.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+save('./traces_v5/threshold.mat','inputs_a','inputs_b','traces_Y','-v7.3');

@@ -93,6 +93,10 @@ for l =1: sets2
             fwrite(myComPort,x,'uint8');
         end
         acquire_LeCroy_scope_data
+        if (exist('traces_Y','var')==0)
+        traces_Y = zeros(no_Test,size(Y,2));
+%         traces_filt = zeros(no_Test,size(FILT_Y,2));
+        end
         traces_Y(sets1*setSize+(l-1)*setSize+n,:) = Y;
 %         traces_filt(sets1*setSize+(l-1)*setSize+n,:) = FILT_Y;
         result = dec2hex(fread(myComPort,6,'uint8'),2);
@@ -118,4 +122,4 @@ fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong case
 % traces_Y = traces_Y(:,meanTrig >=1.5);
 
 % save('./traces_v4/input_sets_second_op.mat', 'inputs_a', 'inputs_b','traces_Y','traces_filt');
-save('./traces_v4/input_sets_second_op_31.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+save('./traces_v4_2/input_sets_second_op_31.mat','inputs_a','inputs_b','traces_Y','-v7.3');
