@@ -25,7 +25,7 @@ no_Test = multssets * setSize^2;
 inputs_a = char(zeros(no_Test,6));
 inputs_b = char(zeros(no_Test,6));
 
-%1000 multiplications with 250 pairs of them with the same second operand
+%80 multiplications with 40 pairs of them with the same second operand
 for i = 1 : multssets/2
     %Generate random b
     b = generateRandom521bit();
@@ -63,7 +63,7 @@ for i = 1 : multssets/2
                 if (result == expMult)
                     disp('OK!');
                     Test= Test + 1;
-                else`
+                else
                     e = MException('Error');
                     throw(e);
                 end
