@@ -75,7 +75,7 @@ architecture bench of top_dsp_tb is
 
 begin
 
-    top_dsp_inst : entity work.top_dsp(rtl_search_signal)
+    top_dsp_inst : entity work.top_dsp
     port map(
         clk       => clk,
         serial_rx => serial_rx,
