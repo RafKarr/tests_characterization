@@ -17,6 +17,8 @@
 -- Additional Comments:
 -- 
 ----------------------------------------------------------------------------------
+
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
@@ -31,8 +33,12 @@ entity dsp_uart_interface is
     );
 end dsp_uart_interface;
 
-architecture rtl of dsp_uart_interface is
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
 
+architecture rtl_5_p_1_c of dsp_uart_interface is
+    attribute dont_touch                      : string;
+    attribute dont_touch of rtl_5_p_1_c : architecture is "yes";
     --Component declaration
 
     component generic_dsp is
@@ -69,6 +75,7 @@ architecture rtl of dsp_uart_interface is
             product                       : out std_logic_vector((accumulation_word_length - 1) downto 0)
         );
     end component;
+    attribute dont_touch of generic_dsp : component is "yes";
 
     component uart_rx is
         generic (
@@ -116,15 +123,26 @@ architecture rtl of dsp_uart_interface is
     --Signal declaration 
 
     --DSP related
-    signal s_a       : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
-    signal s_a_en    : std_logic                                                   := '0';
-    signal s_a_rst   : std_logic                                                   := '1';
-    signal s_b       : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
-    signal s_b_en    : std_logic                                                   := '0';
-    signal s_b_rst   : std_logic                                                   := '1';
-    signal s_p_en    : std_logic                                                   := '0';
-    signal s_p_rst   : std_logic                                                   := '1';
-    signal s_product : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_a          : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
+    signal s_a_en       : std_logic                                                   := '0';
+    signal s_a_rst      : std_logic                                                   := '1';
+    signal s_b          : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
+    signal s_b_en       : std_logic                                                   := '0';
+    signal s_b_rst      : std_logic                                                   := '1';
+    signal s_p_en       : std_logic                                                   := '0';
+    signal s_p_rst      : std_logic                                                   := '1';
+    signal s_product    : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_1  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_2  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_3  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_4  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_5  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    -- signal s_product_6  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    -- signal s_product_7  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    -- signal s_product_8  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    -- signal s_product_9  : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    -- signal s_product_10 : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_mux        : integer range 0 to 9                                        := 0;
 
     --UART RX related
     signal s_RX_DV   : std_logic                    := '0';
@@ -145,6 +163,7 @@ architecture rtl of dsp_uart_interface is
         cleanup,
         idle,
         mult,
+        -- mult_rst,
         send
     );
 
@@ -152,15 +171,18 @@ architecture rtl of dsp_uart_interface is
     signal s_next_state       : state                := cleanup;
     signal r_byte_count       : integer range 0 to 6 := 0;
     signal s_byte_count_reset : std_logic            := '0';
-    signal s_byte_count_en    : std_logic            := '1';
+    signal s_byte_count_en    : std_logic            := '0';
     signal r_clk_count        : integer range 0 to 2 := 0;
     signal s_clk_count_en     : std_logic            := '0';
     signal s_trigger          : std_logic            := '0';
+    -- signal r_mult_count       : integer range 0 to 9 := 0;
+    -- signal s_mult_count_reset : std_logic            := '0';
+    -- signal s_mult_count_en    : std_logic            := '0';
 
 begin
 
     --Component instantiation 
-    dsp : generic_dsp
+    dsp_1 : generic_dsp
     generic map(
         multiplication_word_length => multiplication_word_length,
         accumulation_word_length   => accumulation_word_length
@@ -191,9 +213,145 @@ begin
         clk                           => clk,
         p_en                          => s_p_en,
         p_rst                         => s_p_rst,
-        product                       => s_product
+        product                       => s_product_1
     );
 
+    dsp_2 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_2
+    );
+
+    dsp_3 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_3
+    );
+
+    dsp_4 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_4
+    );
+
+    dsp_5 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_5
+    );
+    
     tx : uart_tx
     generic map(
         g_CLKS_PER_BIT => 868 -- 100 MHz / 115200 Baud rate
@@ -231,8 +389,9 @@ begin
     );
     --Assignments
 
-    trigger <= s_trigger;
-
+    trigger   <= s_trigger;
+    s_mux     <= 0;
+    s_product <= s_product_1 and s_product_2 and s_product_3 and s_product_4 and s_product_5;
     --Processes
 
     reg_byte_count : process (clk)
@@ -248,6 +407,19 @@ begin
         end if;
     end process;
 
+    -- reg_mult_count : process (clk)
+    -- begin
+    --     if rising_edge(clk) then
+    --         if s_mult_count_reset = '1' then
+    --             r_mult_count <= 0;
+    --         else
+    --             if (s_mult_count_en = '1') then
+    --                 r_mult_count <= r_mult_count + 1;
+    --             end if;
+    --         end if;
+    --     end if;
+    -- end process;
+
     reg_clk_count : process (clk)
     begin
         if rising_edge(clk) then
@@ -259,7 +431,7 @@ begin
         end if;
     end process;
 
-    mux_byte_tx : process (s_TX_Byte_mux_en, r_byte_count, s_product)
+    mux_byte_tx : process (s_TX_Byte_mux_en, r_byte_count)
         variable treating_position : integer;
     begin
         if (s_TX_Byte_mux_en = '1') then
@@ -294,6 +466,8 @@ begin
                 s_byte_count_en    <= '0';
                 s_clk_count_en     <= '0';
                 s_trigger          <= '0';
+                -- s_mult_count_en    <= '0';
+                -- s_mult_count_reset <= '1';
                 s_next_state       <= idle;
 
             when idle =>
@@ -305,6 +479,8 @@ begin
                 s_TX_Byte_mux_en   <= '0';
                 s_byte_count_reset <= '0';
                 s_byte_count_en    <= '0';
+                -- s_mult_count_en    <= '0';
+                -- s_mult_count_reset <= '0';
                 s_trigger          <= '0';
                 s_clk_count_en     <= '0';
                 s_a_en             <= '0';
@@ -332,13 +508,20 @@ begin
                 s_byte_count_reset <= '0';
                 s_byte_count_en    <= '0';
                 s_trigger          <= '1';
+                -- s_mult_count_reset <= '0';
+                -- s_mult_count_en    <= '0';
                 s_TX_Byte_mux_en   <= '0';
 
                 if (r_clk_count = 2) then
-                    s_p_en           <= '0';
-                    s_clk_count_en   <= '0';
-                    s_TX_Byte_mux_en <= '1';
-                    s_next_state     <= send;
+                    s_p_en         <= '0';
+                    s_clk_count_en <= '0';
+                    -- if r_mult_count /= 9 then
+                        -- s_mult_count_en <= '1';
+                        -- s_next_state    <= mult_rst;
+                    -- else
+                        s_TX_Byte_mux_en <= '1';
+                        s_next_state     <= send;
+                    -- end if;
 
                 else
                     s_p_en           <= '1';
@@ -347,16 +530,36 @@ begin
                     s_next_state     <= mult;
                 end if;
 
+            -- when mult_rst =>
+            --     s_ack              <= '0';
+            --     s_a_en             <= '1';
+            --     s_a_rst            <= '0';
+            --     s_b_en             <= '1';
+            --     s_b_rst            <= '0';
+            --     s_p_en             <= '1';
+            --     s_p_rst            <= '0';
+            --     s_TX_DV            <= '0';
+            --     s_TX_Byte_mux_en   <= '0';
+            --     s_byte_count_reset <= '0';
+            --     s_byte_count_en    <= '0';
+            --     s_clk_count_en     <= '0';
+            --     s_trigger          <= '1';
+            --     s_mult_count_en    <= '0';
+            --     s_mult_count_reset <= '0';
+            --     s_next_state       <= mult;
+
             when send =>
 
-                s_ack     <= '1';
-                s_a_en    <= '0';
-                s_a_rst   <= '1';
-                s_b_en    <= '0';
-                s_b_rst   <= '1';
-                s_p_en    <= '0';
-                s_p_rst   <= '1';
-                s_trigger <= '1';
+                s_ack              <= '1';
+                s_a_en             <= '0';
+                s_a_rst            <= '1';
+                s_b_en             <= '0';
+                s_b_rst            <= '1';
+                s_p_en             <= '0';
+                s_p_rst            <= '1';
+                s_trigger          <= '1';
+                -- s_mult_count_en    <= '0';
+                -- s_mult_count_reset <= '0';
 
                 if (r_byte_count < 6) then
 
@@ -404,4 +607,5 @@ begin
         end if;
     end process;
 
-end rtl;
+end rtl_5_p_1_c;
+

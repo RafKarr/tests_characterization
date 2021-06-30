@@ -1,6 +1,4 @@
-
 rng shuffle
-% cleanupObj = onCleanup(@cleanMeUp);
 clear
 format long;
 if ~isempty(instrfind)
@@ -80,4 +78,4 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save('./traces_v6/input_sets_second_op1.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+save('./traces_v7/input_sets_second_op2.mat','inputs_a','inputs_b','traces_Y','-v7.3');

@@ -31,8 +31,12 @@ entity dsp_uart_interface is
     );
 end dsp_uart_interface;
 
-architecture rtl of dsp_uart_interface is
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
 
+architecture rtl_3_p_1_c of dsp_uart_interface is
+    attribute dont_touch                : string;
+    attribute dont_touch of rtl_3_p_1_c : architecture is "yes";
     --Component declaration
 
     component generic_dsp is
@@ -69,6 +73,7 @@ architecture rtl of dsp_uart_interface is
             product                       : out std_logic_vector((accumulation_word_length - 1) downto 0)
         );
     end component;
+    attribute dont_touch of generic_dsp : component is "yes";
 
     component uart_rx is
         generic (
@@ -116,15 +121,19 @@ architecture rtl of dsp_uart_interface is
     --Signal declaration 
 
     --DSP related
-    signal s_a       : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
-    signal s_a_en    : std_logic                                                   := '0';
-    signal s_a_rst   : std_logic                                                   := '1';
-    signal s_b       : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
-    signal s_b_en    : std_logic                                                   := '0';
-    signal s_b_rst   : std_logic                                                   := '1';
-    signal s_p_en    : std_logic                                                   := '0';
-    signal s_p_rst   : std_logic                                                   := '1';
-    signal s_product : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_a         : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
+    signal s_a_en      : std_logic                                                   := '0';
+    signal s_a_rst     : std_logic                                                   := '1';
+    signal s_b         : std_logic_vector((multiplication_word_length - 1) downto 0) := (others => '0');
+    signal s_b_en      : std_logic                                                   := '0';
+    signal s_b_rst     : std_logic                                                   := '1';
+    signal s_p_en      : std_logic                                                   := '0';
+    signal s_p_rst     : std_logic                                                   := '1';
+    signal s_product   : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_1 : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_2 : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_product_3 : std_logic_vector((accumulation_word_length - 1) downto 0)   := (others => '0');
+    signal s_mux       : integer range 0 to 9                                        := 0;
 
     --UART RX related
     signal s_RX_DV   : std_logic                    := '0';
@@ -152,7 +161,7 @@ architecture rtl of dsp_uart_interface is
     signal s_next_state       : state                := cleanup;
     signal r_byte_count       : integer range 0 to 6 := 0;
     signal s_byte_count_reset : std_logic            := '0';
-    signal s_byte_count_en    : std_logic            := '1';
+    signal s_byte_count_en    : std_logic            := '0';
     signal r_clk_count        : integer range 0 to 2 := 0;
     signal s_clk_count_en     : std_logic            := '0';
     signal s_trigger          : std_logic            := '0';
@@ -160,7 +169,7 @@ architecture rtl of dsp_uart_interface is
 begin
 
     --Component instantiation 
-    dsp : generic_dsp
+    dsp_1 : generic_dsp
     generic map(
         multiplication_word_length => multiplication_word_length,
         accumulation_word_length   => accumulation_word_length
@@ -191,7 +200,75 @@ begin
         clk                           => clk,
         p_en                          => s_p_en,
         p_rst                         => s_p_rst,
-        product                       => s_product
+        product                       => s_product_1
+    );
+
+    dsp_2 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_2
+    );
+
+    dsp_3 : generic_dsp
+    generic map(
+        multiplication_word_length => multiplication_word_length,
+        accumulation_word_length   => accumulation_word_length
+    )
+    port map(
+        a                             => s_a,
+        a_bypass                      => '0',
+        a_en                          => s_a_en,
+        a_rst                         => s_a_rst,
+        b                             => s_b,
+        b_bypass                      => '0',
+        b_en                          => s_b_en,
+        b_rst                         => s_b_rst,
+        c => (others => '0'),
+        c_bypass                      => '0',
+        c_en                          => '1',
+        c_rst                         => '0',
+        external_carry_in => (others => '0'),
+        add_sub_mode                  => '0',
+        reg_add_sub_mode_ce           => '1',
+        accumulation_mode             => '0',
+        reg_accumulation_mode_ce      => '1',
+        external_carry_in_mode        => '0',
+        reg_external_carry_in_mode_ce => '0',
+        arshift_mode                  => '0',
+        reg_arshift_mode_ce           => '0',
+        reg_mode_rst                  => '0',
+        clk                           => clk,
+        p_en                          => s_p_en,
+        p_rst                         => s_p_rst,
+        product                       => s_product_3
     );
 
     tx : uart_tx
@@ -231,8 +308,9 @@ begin
     );
     --Assignments
 
-    trigger <= s_trigger;
-
+    trigger   <= s_trigger;
+    s_mux     <= 0;
+    s_product <= s_product_1 and s_product_2 and s_product_3;
     --Processes
 
     reg_byte_count : process (clk)
@@ -259,7 +337,7 @@ begin
         end if;
     end process;
 
-    mux_byte_tx : process (s_TX_Byte_mux_en, r_byte_count, s_product)
+    mux_byte_tx : process (s_TX_Byte_mux_en, r_byte_count)
         variable treating_position : integer;
     begin
         if (s_TX_Byte_mux_en = '1') then
@@ -404,4 +482,4 @@ begin
         end if;
     end process;
 
-end rtl;
+end rtl_3_p_1_c;

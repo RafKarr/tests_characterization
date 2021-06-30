@@ -53,17 +53,29 @@ architecture rtl of top_dsp is
     signal s_serial_tx : std_logic;
     signal s_trigger   : std_logic;
 
-begin
+    for dsp_uart_interface_inst : dsp_uart_interface
+        -- use configuration work.rtl_real;
+        use configuration work.rtl_10_p_10_c_real;
+        
+    begin
 
-    --Instances
+        --Instances
+        dsp_uart_interface_inst : dsp_uart_interface
 
-    dsp_uart_interface_inst : entity work.dsp_uart_interface(rtl)
-    port map(
-        clk       => s_clk,
-        serial_rx => s_serial_rx,
-        reset     => s_reset,
-        serial_tx => s_serial_tx,
-        trigger   => s_trigger
-    );
+        port map(
+            clk       => s_clk,
+            serial_rx => s_serial_rx,
+            reset     => s_reset,
+            serial_tx => s_serial_tx,
+            trigger   => s_trigger
+        );
 
-end rtl;
+        --Assignments
+
+        s_clk       <= clk;
+        s_serial_rx <= serial_rx;
+        s_reset     <= reset;
+        serial_tx   <= s_serial_tx;
+        trigger     <= s_trigger;
+
+    end rtl;

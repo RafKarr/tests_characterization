@@ -1,0 +1,8 @@
+Explanation of the denomination of the traces:
+
+- traces_clock: Traces of clock for synchronization purposes
+- traces_v4: Application of script test_dsp_sets on top of the card
+- traces_v5: Obtention of traces on the back of the card (20 DSP 10 CM)
+- traces_v6: Obtention of traces on the back of the card (10 DSP 10 CM)
+- traces_v7: Obtention of traces on the back of the card (10 DSP 1 CM)
+- traces_v8: Obtention of traces on the back of the card (5 DSP 1 CM)
