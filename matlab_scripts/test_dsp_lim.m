@@ -26,10 +26,12 @@ inputs_b = char(zeros(no_Test,6));
 %80 multiplications with 40 pairs of them with the same second operand
 for i = 1 : multssets/2
     %Generate random b
-    b = generateRandom521bit();
+%     b = generateRandom521bit();
+    a = generateRandom521bit();
     %Multiply with two different a
     for j = 1:2
-        a = generateRandom521bit();
+%         a = generateRandom521bit();
+        b = generateRandom521bit();
         %Select subwords and send
         for k = 1:setSize
             subB = b(k,:);
@@ -78,4 +80,5 @@ disp('Completed!!')
 disp('------------')
 fprintf('Summary:\n Total tests: %d\n Total correct cases: %d\n Total wrong cases: %d\n', no_Test,Test,WrongTest);
 
-save('./traces_v7/input_sets_second_op2.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+% save('./traces_v6/input_sets_second_op2.mat','inputs_a','inputs_b','traces_Y','-v7.3');
+save('./traces_v7/input_sets_first_op1.mat','inputs_a','inputs_b','traces_Y','-v7.3');

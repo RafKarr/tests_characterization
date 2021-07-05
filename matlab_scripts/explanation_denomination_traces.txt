@@ -6,3 +6,4 @@ Explanation of the denomination of the traces:
 - traces_v6: Obtention of traces on the back of the card (10 DSP 10 CM)
 - traces_v7: Obtention of traces on the back of the card (10 DSP 1 CM)
 - traces_v8: Obtention of traces on the back of the card (5 DSP 1 CM)
+- traces_v9: Obtention of traces on the back of the card (3 DSP 1 CM)
