@@ -7,3 +7,7 @@ Explanation of the denomination of the traces:
 - traces_v7: Obtention of traces on the back of the card (10 DSP 1 CM)
 - traces_v8: Obtention of traces on the back of the card (5 DSP 1 CM)
 - traces_v9: Obtention of traces on the back of the card (3 DSP 1 CM)
+
+1. Implement scalar multiplication with countermeasure with ASIC targeting for very constrained devices (limited gates and limited power consumption)
+2. Propose an authentication protocol based on ECC robust against typical wireles attack + hardware attacks (SCA + FA)
+3. Evaluate the work and prove that is resistant to sca + fa.

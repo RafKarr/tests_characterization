@@ -1,6 +1,7 @@
 function meanTraces = getMeanTraces(traces,numberOfSets,setSize)
 %GETMEANTRACES Get mean traces by sets
 
+
 meanTraces = zeros(numberOfSets,size(traces,2));
 
 for i = 1 : numberOfSets
