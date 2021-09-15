@@ -1,0 +1,34 @@
+Basically is the following :
+
+With the vpi lib we can do everything. However, it is necessary to have explicitly the subword multiplication to do the leakage.
+I propose the following:
+
+- Do the actual multiplications and reductions with the vpi library.
+- But when doing the multiplications, call a function that computes the leakage. The steps would be the following:
+	- Separate the vpi numbers into an 8bit word array.
+	- Match the size of both arrays.
+	- Take intermediate values of the multiplication so we can do the leakage. That is, save the leakage into a matrix and the value will be:
+		' H(xi yj) + gaussian noise ' The gaussian noise will be of mean zero and some variance (first experiment will be with variance 0).
+		Now, some things to take into consideration: Obviously it can't be a single point. It has to be more than that. How many ? 
+		Read some papers to find the solution. If not I guess we would have to take into consideration the clock speed, an oscilloscope normal
+		sampling rate, the time to do a multiplication an base the samples on that :)
+
+I think that's about it. I think we can do this between friday and monday. Not too difficult I think. And thinking about the model is quite exciting !
+
+So now we think about the model. List of things required to do the model:
+
+- Open and save Matlab Variables (done)
+- How to generate white gaussian noise (not used at the beggining but still it is useful)(done)
+- How many samples per multiplication ? Things to consider: 
+	- Oscilloscope sampling rate
+	- Time it takes to do a multiplication in an FPGA
+- Hamming Weight function 
+- Anonymous Functions (done)
+
+09/03/21
+
+Let's test the averages with a key of only 4 bits and then we'll go on. It'll be 'B'. And the base will be 'AA'
+
+https://www.di-mgt.com.au/rsa_alg.html 
+
+Use the crypted message to test
